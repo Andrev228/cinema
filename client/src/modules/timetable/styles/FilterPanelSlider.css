@@ -1,0 +1,38 @@
+.filter .input #range {
+    margin: 35px 20px 20px 20px;
+}
+
+.noUi-connect {
+    background: #f93313;
+}
+
+.noUI-label {
+    position: absolute;
+    top: -40px;
+    left: 20%;
+    margin-left: -20px;
+    width: 60px;
+    color: #fff;
+    text-align: center;
+    height: 30px;
+    line-height: 30px;
+    border-radius: 5px;
+    background: rgba(78, 93, 108, 0.55);
+}
+
+.noUI-label:after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 0;
+    border: 5px solid;
+    border-color: transparent;
+    border-top-color: rgba(60, 60, 60, 0.4);
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+}
+
+.noUi-handle:focus {
+    outline:none!important;
+}

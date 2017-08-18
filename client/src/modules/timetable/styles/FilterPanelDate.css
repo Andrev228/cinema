@@ -1,0 +1,32 @@
+.btn-group.dropdown-block {
+    position: relative;
+    display: inline-block;
+    vertical-align: middle;
+    width: 220px;
+    margin: 10px 0 10px 10px;
+}
+
+.btn-group.dropdown-block .btn.dropdown-toggle {
+    width: 100%;
+    background-color: rgb(249, 51, 19);;
+    color: white;
+}
+
+.filter .input .btn-group.dropdown-block .dropdown-menu {
+    text-align: center;
+    font-size: 15px;
+    cursor: pointer;
+    padding: 0;
+    width: 100%;
+    margin-top: 0;
+}
+
+.dropdown-menu .dropdown-item {
+    margin: 0;
+    height: 30px;
+    line-height: 26px;
+}
+
+.dropdown-menu .dropdown-item.current {
+    background-color: rgba(249, 51, 19, 0.44)
+}

@@ -1,0 +1,12 @@
+.filter .input .btn-group.select-format {
+    height: 100%;
+    padding-left: 10px;
+}
+.filter .input .btn-group.select-format .btn.btn-primary {
+    height: 35px;
+    background-color: rgb(249, 51, 19);;
+    color: white;
+}
+.btn.active:focus {
+    outline: none;
+}

@@ -1,0 +1,27 @@
+.filter .film-grid .film .timetable {
+    display: block;
+    border-top: 1px solid black;
+    padding-top: 5px;
+    width: 230px;
+}
+
+.filter .film-grid .film .timetable .time {
+    display: inline-block;
+    border-radius: 7px;
+    width: auto;
+    margin: 1px 1px 3px 1px;
+    padding: 0 3px 0 3px;
+    font-size: 16px;
+    background-color: rgba(197, 197, 197, 0.27);
+    cursor: pointer;
+    color: black;
+}
+
+.filter .film-grid .film .timetable .time:hover {
+    background-color: rgb(179, 179, 179);
+}
+
+.filter .film-grid .film .timetable .time .format3d {
+      color: #f93313;
+      font-weight: bold;
+  }

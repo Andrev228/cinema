@@ -1,0 +1,21 @@
+.filter .film-grid .film .film-img {
+    outline: 2px solid #404040;
+    width: 230px;
+    height: 320px;
+}
+
+.filter .film-grid .film .film-img:hover {
+    outline: 3px solid #f52423 !important
+}
+.filter .film-grid .film {
+    text-align: center;
+    display: table;
+    float: left;
+    padding: 10px 0 0 11px;
+    height: 420px;
+}
+
+.film .film-title {
+    display: inline-block;
+    margin: 7px 0 5px 0;
+}

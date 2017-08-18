@@ -1,0 +1,21 @@
+.main .input-block {
+    height: auto;
+    display: grid;
+}
+
+.input-block .login-field {
+    padding: 0 20px 20px 0;
+    font-size: 17px;
+    font-weight: bold;
+}
+
+.main .input-block textarea {
+    resize: none;
+    margin-bottom: 15px;
+}
+
+.main .input-block .add_button {
+    height: 35px;
+    width: 30%;
+    position: relative;
+}

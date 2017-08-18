@@ -1,0 +1,32 @@
+.btn-group.genre-picker {
+    position: relative;
+    display: inline-block;
+    vertical-align: middle;
+    width: 220px;
+    margin-left: 10px;
+}
+
+.btn-group.genre-picker .btn.dropdown-toggle {
+    width: 100%;
+    background-color: rgb(249, 51, 19);;
+    color: white;
+}
+
+.filter .input .btn-group.genre-picker .dropdown-menu {
+    text-align: center;
+    font-size: 15px;
+    cursor: pointer;
+    padding: 0;
+    width: 100%;
+    margin-top: 0;
+}
+
+.dropdown-menu .dropdown-item {
+    margin: 0;
+    height: 30px;
+    line-height: 26px;
+}
+
+.dropdown-menu .dropdown-item.current {
+    background-color: rgba(249, 51, 19, 0.44)
+}

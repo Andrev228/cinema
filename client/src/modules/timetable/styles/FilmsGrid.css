@@ -1,0 +1,18 @@
+.filter .film-grid {
+    display: table;
+    height: 100%;
+    border: 1px solid black;
+    width: 975px;
+    margin: 10px auto 10px auto;
+    margin-bottom: 10px;
+}
+
+.remove {
+    float: right;
+    color: red;
+}
+
+.comments {
+    width: auto;
+    position: absolute;
+}
