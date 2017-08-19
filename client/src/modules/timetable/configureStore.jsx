@@ -12,11 +12,11 @@ let initialState = {
             '01.01.2017': [],
         }
     }],
-    date: '01.01.2017',
-    format: 'Все',
-    minTime: 540,
-    maxTime: 1440,
-    genre: 'Все жанры'
+    date: localStorage.getItem('date') || '01.01.2017',
+    format: localStorage.getItem('format') || 'Все',
+    minTime: localStorage.getItem('minTime') || 540,
+    maxTime: localStorage.getItem('maxTime') || 1440,
+    genre: localStorage.getItem('genre') || 'Все жанры'
 };
 
 const store = createStore(reducer,

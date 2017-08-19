@@ -11,18 +11,17 @@ const toTime = (time) => {
 
 
 const filterByDate = (state) => {
-    let helpFilmsArr = [];
-    state.films.map(el => {
-        helpFilmsArr.push(Object.assign({}, el, {
-            timetable: el.timetable[state.date]
-        }));
+    let newState = JSON.parse(JSON.stringify(state));
+    newState.films.map(el => {
+        for (let key in el.timetable) {
+            if (key === state.date) el.timetable = el.timetable[key]
+        }
     });
-    return Object.assign({}, state, {
-        films: helpFilmsArr
-    });
+    return newState;
 };
 
 const filterByGenre = (state) => {
+
     let newFilmsState = [];
     state.films.map(el => {
         el.genre.map(elm => {
@@ -37,27 +36,13 @@ const filterByGenre = (state) => {
 };
 
 const filterByFormat = (state) => {
-    let helpArrFilms = [],
-        helpVar,
-        id = 0;
-    state.films.map(el => {
-        helpVar = 0;
-        helpArrFilms.push(Object.assign({}, el));
-        console.log(el);
-        console.log(helpArrFilms);
-        helpArrFilms[id].timetable = [];
-        el.timetable.map(elm => {
-            if (elm.format === state.format) {
-                helpVar++;
-                helpArrFilms[id].timetable.push(elm)
-            }
+    state.films = state.films.filter(el => {
+        el.timetable = el.timetable.filter(elm => {
+            return elm.format === state.format;
         });
-        if (helpVar === 0) helpArrFilms.splice(id, 1);
-        id++;
+        return !!el.timetable.length;
     });
-    return Object.assign({}, state, {
-        films: helpArrFilms
-    });
+    return state;
 };
 
 const filterByTime = (state) => {

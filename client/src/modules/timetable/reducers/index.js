@@ -5,7 +5,9 @@ const reducer = (state, action) => {
     switch (action.type) {
 
         case types.SET_STORE:
-            return Object.assign({}, state, action.store);
+            let newStore = Object.assign({}, state);
+            newStore.films = JSON.parse(JSON.stringify(action.films));
+            return newStore;
 
         case types.CHANGE_DATE:
             localStorage.setItem('date', action.date);
@@ -17,8 +19,8 @@ const reducer = (state, action) => {
             return Object.assign({}, state, {
                 genre: action.genre
             });
-        case types.CHANGE_TYPE:
-            localStorage.setItem('type', action.filmType);
+        case types.CHANGE_FORMAT:
+            localStorage.setItem('format', action.filmType);
             return Object.assign({}, state, {
                 format: action.filmType
             });

@@ -1,6 +1,6 @@
-import * as types from '../constants/constants.jsx';
-import { urlTimetable }    from '../../../config/url.jsx';
-import fetch      from 'isomorphic-fetch';
+import * as types       from '../constants/constants.jsx';
+import { urlTimetable } from '../../../config/url.jsx';
+import fetch            from 'isomorphic-fetch';
 
 export const getInitStore = () => {
     return dispatch => {
@@ -9,10 +9,10 @@ export const getInitStore = () => {
         })
             .then(res => {
                 res.json()
-                    .then(store => {
+                    .then(films => {
                         dispatch({
                             type: types.SET_STORE,
-                            store
+                            films
                         })
                     })
             })
@@ -25,7 +25,7 @@ export const dateClick = (date) => ({
 });
 
 export const filmTypeClick = (filmType) => ({
-    type: types.CHANGE_TYPE,
+    type: types.CHANGE_FORMAT,
     filmType
 });
 
