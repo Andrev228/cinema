@@ -23,10 +23,13 @@ export default class CommentsList extends Component {
     render() {
         let el,
             elOptions,
+            elChangingErrors,
             id = 0;
         return (<div className="comments">
             {
                 this.props.store.comments.map(comment => {
+
+
                     if (comment.editable === true) {
                         el = (<div>
                             <textarea type="textarea"
@@ -45,12 +48,21 @@ export default class CommentsList extends Component {
                                     {comment.comment}
                               </div>)
                     }
+
+
                     if (comment.current === true) {
                         elOptions = (<div>
                                         <span className="remove" onClick={this.props.actions.setEditableComment.bind(null, comment.id)}>Ред.</span>
                                         <span className="remove" onClick={this.props.actions.DeleteComment.bind(null, comment.id)}>Х</span>
                                      </div>)
                     } else elOptions = '';
+
+                    if (comment.changingErrors.edit === true) {
+                        elChangingErrors = (<span className="changing-err">Ошибка редактирования</span>)
+                    } else if (comment.changingErrors.delete === true) {
+                        elChangingErrors = (<span className="changing-err">Не удалось удалить комментарий</span>)
+                    }
+
                     return (<div className="comment-block" key={id++}>
                                 <div className="comment-header">
                                     <span className="author-name">
@@ -59,7 +71,8 @@ export default class CommentsList extends Component {
                                     <span className="comment-time">
                                         {convertDate(comment.date)}
                                     </span>
-                                    {elOptions}
+                                    { elChangingErrors }
+                                    { elOptions }
                                 </div>
                                 {el}
                             </div>);

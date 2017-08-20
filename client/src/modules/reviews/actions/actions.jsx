@@ -34,3 +34,13 @@ export const cancelEditing = (id) => ({
     type: types.CANCEL_EDITING,
     id
 });
+
+export const showDeleteCommentError = (id) => ({
+    type: types.SHOW_DELETE_COMMENT_ERROR,
+    id
+});
+
+export const showEditCommentError = (id) => ({
+    type: types.SHOW_EDIT_COMMENT_ERROR,
+    id
+});

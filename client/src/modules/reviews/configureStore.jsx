@@ -4,7 +4,7 @@ import thunk                        	from 'redux-thunk';
 
 let initialState = {
     login: '',
-    comments: []
+    comments: [],
 };
 
 const store = createStore(reducer,

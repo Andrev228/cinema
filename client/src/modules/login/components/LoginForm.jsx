@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 require('../styles/login.css');
 
-export default class Login extends Component {
+export default class LoginForm extends Component {
     constructor(props) {
         super(props);
         this.submit = this.submit.bind(this);

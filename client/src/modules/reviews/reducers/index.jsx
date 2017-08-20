@@ -1,7 +1,5 @@
 import * as types from '../constants/constants.jsx';
 
-
-
 const reducer = (store, action) => {
     switch (action.type) {
 
@@ -16,7 +14,11 @@ const reducer = (store, action) => {
                 comment: action.comment,
                 current: true,
                 editable: false,
-                date: new Date()
+                date: new Date(),
+                changingErrors: {
+                    edit: false,
+                    delete: false
+                }
             });
             return newStore0;
 
@@ -51,6 +53,31 @@ const reducer = (store, action) => {
                 (comment.id === action.id) ? comment.editable = false : 0;
             });
             return newStore1;
+
+
+        case types.SHOW_DELETE_COMMENT_ERROR:
+            let newStore4 = Object.assign([], store);
+            newStore4.comments.map(comment => {
+                comment.id === action.id ?
+                    comment.changingErrors = {
+                        edit: false,
+                        delete: true
+                } : 0;
+            });
+            return newStore4;
+
+        case types.SHOW_EDIT_COMMENT_ERROR:
+            let newStore5 = Object.assign([], store);
+            newStore5.comments.map(comment => {
+                if (comment.id === action.id) {
+                    comment.editable = false;
+                    comment.changingErrors = {
+                        edit: true,
+                        delete: false
+                    }
+                }
+            });
+            return newStore5;
 
         default: return store;
     }

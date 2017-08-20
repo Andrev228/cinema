@@ -3,22 +3,35 @@ import { urlComments }    from '../../../config/url.jsx';
 import { getComments,
     deleteComment,
     addComment,
-    saveComment } from './actions.jsx';
+    saveComment,
+    showDeleteCommentError,
+    showEditCommentError} from './actions.jsx';
 
 export const getStore = () => {
-    return (dispatch) => {
-        fetch('http://localhost:3000/comments', {
+    return async (dispatch) => {
+
+        const changeCommentForClientApp = (comment) => {
+            comment.id = comment._id;
+            comment.date = new Date(comment.date);
+            comment.changingErrors = {
+                edit: false,
+                delete: false
+            };
+            delete comment._id;
+            return comment;
+        };
+
+        let serverResponse = await fetch('http://localhost:3000/comments', {
             credentials: 'same-origin',
-        })
-            .then(res => {
-                return res.json();
-            })
-            .then(store => {
-                store.comments.map(comment => {
-                    comment.id = comment._id;
-                    comment.date = new Date(comment.date);
+        });
+
+        serverResponse
+            .json()
+            .then(async store => {
+                store.comments = await Promise.all(store.comments.map(comment => {
+                    comment = changeCommentForClientApp(comment);
                     return comment;
-                });
+                }));
                 return store;
             })
             .then(store => {
@@ -29,33 +42,31 @@ export const getStore = () => {
 };
 
 export const DeleteComment = (id) => {
-    return (dispatch) => {
-        fetch(urlComments, {
+    return async (dispatch) => {
+
+        let serverResponse = await fetch(urlComments, {
             method: 'delete',
             headers: {
                 'Accept': 'application/json, text/plain, */*',
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({id: id})
-        })
-            .then(res => {
-                if (res.status === 200) {
-                    dispatch(deleteComment(id))
-                } else {
-                    return 0;
-                }
-            })
+            body: JSON.stringify({ id })
+        });
+
+            serverResponse.status === 200 ?
+                dispatch(deleteComment(id))
+                : dispatch(showDeleteCommentError(id))
 
     }
 };
 
 export const AddComment = (name, comment) => {
-    return (dispatch) => {
+    return async (dispatch) => {
         let data = {
             name: name,
             comment: comment
         };
-        fetch(urlComments, {
+        let serverResponse = await fetch(urlComments, {
             method: 'post',
             credentials: 'same-origin',
             headers: {
@@ -63,41 +74,35 @@ export const AddComment = (name, comment) => {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(data)
-        })
-            .then(res => {
-                if (res.status === 200) {
-                    res.json()
-                        .then(res =>
-                            dispatch(addComment(name, comment, res.id))
-                        );
-                } else {
-                    return 0;
-                }
-            })
-
+        });
+            serverResponse.status === 200 ?
+                serverResponse
+                    .json()
+                    .then(res =>
+                        dispatch(addComment(name, comment, res.id))
+                    ) : 0;
     }
 };
 
 export const SaveComment = (id, comment) => {
-    return (dispatch) => {
-        let data = {
-            id: id,
-            comment: comment
-        };
-        fetch(urlComments, {
-            method: 'put',
-            headers: {
-                'Accept': 'application/json, text/plain, */*',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-        })
-            .then(res => {
-                if (res.status === 200) {
+    return async (dispatch) => {
+
+        if (comment === '') dispatch(showEditCommentError(id));
+        else {
+            let data = { id, comment };
+
+            let serverResponse = await fetch(urlComments, {
+                method: 'put',
+                headers: {
+                    'Accept': 'application/json, text/plain, */*',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
+                serverResponse.status === 200 ?
                     dispatch(saveComment(id, comment))
-                } else {
-                    return 0;
-                }
-            })
+                        : dispatch(showEditCommentError(id))
+        }
     }
 };

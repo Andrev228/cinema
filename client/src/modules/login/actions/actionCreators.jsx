@@ -4,8 +4,9 @@ import { successAuth,
          showErrors } from './actions.jsx';
 
 export const validateData = (login, password) => {
-    return dispatch => {
+    return async dispatch => {
         let errors = [];
+
         if (login.length === 0) errors.push('Введите логин');
         else {
             if (login.length < 3) errors.push('Логин должен быть минимум 2 символа');
@@ -23,7 +24,7 @@ export const validateData = (login, password) => {
         if (errors.length > 0) {
             dispatch(showErrors(errors));
         } else {
-            fetch(urlLogin, {
+            let serverResponse = await fetch(urlLogin, {
                 method: 'post',
                 credentials: 'same-origin',
                 headers: {
@@ -31,36 +32,36 @@ export const validateData = (login, password) => {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({login, password})
-            })
-                .then(res => {
-                    if (res.status === 200) {
-                        res.json()
-                            .then(result => {
-                                dispatch(successAuth(result.login))
-                            });
-                    } else {
-                        res.json()
+            });
+
+            serverResponse.status === 200 ?
+                serverResponse.json()
+                    .then(result => {
+                        dispatch(successAuth(result.login))
+                    }) : serverResponse.json()
                             .then(result => {
                                 errors = [result.errors];
-                                dispatch(showErrors(errors))
+                                dispatch(showErrors([result.errors]))
                             });
-                    }
-                })
         }
     };
 };
 
 export const isUserLogin = () => {
-    return dispatch => {
-        fetch(urlLogin, {
+    return async dispatch => {
+        try {
+        let serverResponse = await fetch(urlLogin, {
             method: 'get',
             credentials: 'include'
-        })
-            .then(res => {
-                res.json()
-                    .then(result => {
-                        result.login ? dispatch(successAuth(result.login)) : 0;
-                    })
+        });
+
+        serverResponse
+            .json()
+            .then(result => {
+                result.login ? dispatch(successAuth(result.login)) : 0;
             })
+        } catch (err) {
+            console.log(err);
+        }
     }
 };
