@@ -3144,10 +3144,10 @@ const getInitStore = () => {
         __WEBPACK_IMPORTED_MODULE_2_isomorphic_fetch___default()(__WEBPACK_IMPORTED_MODULE_1__config_url_jsx__["a" /* urlTimetable */], {
             method: 'get'
         }).then(res => {
-            res.json().then(store => {
+            res.json().then(films => {
                 dispatch({
                     type: __WEBPACK_IMPORTED_MODULE_0__constants_constants_jsx__["a" /* SET_STORE */],
-                    store
+                    films
                 });
             });
         });
@@ -3164,7 +3164,7 @@ const dateClick = date => ({
 
 
 const filmTypeClick = filmType => ({
-    type: __WEBPACK_IMPORTED_MODULE_0__constants_constants_jsx__["c" /* CHANGE_TYPE */],
+    type: __WEBPACK_IMPORTED_MODULE_0__constants_constants_jsx__["c" /* CHANGE_FORMAT */],
     filmType
 });
 /* harmony export (immutable) */ __webpack_exports__["b"] = filmTypeClick;
@@ -5525,11 +5525,11 @@ const urlLogin = 'http://localhost:3000/login';
 /* harmony export (immutable) */ __webpack_exports__["c"] = urlLogin;
 
 
-const urlComments = 'http://localhost:3000/comments';
+const urlComments = 'http://localhost:3000/reviews/api';
 /* harmony export (immutable) */ __webpack_exports__["b"] = urlComments;
 
 
-const urlTimetable = 'http://localhost:3000/timetable';
+const urlTimetable = 'http://localhost:3000/timetable/api';
 /* harmony export (immutable) */ __webpack_exports__["a"] = urlTimetable;
 
 
@@ -5547,17 +5547,28 @@ const urlTimetable = 'http://localhost:3000/timetable';
 
 
 const getStore = () => {
-    return dispatch => {
-        __WEBPACK_IMPORTED_MODULE_0_isomorphic_fetch___default()('http://localhost:3000/comments', {
+    return async dispatch => {
+
+        const changeCommentForClientApp = comment => {
+            comment.id = comment._id;
+            comment.date = new Date(comment.date);
+            comment.changingErrors = {
+                edit: false,
+                delete: false
+            };
+            delete comment._id;
+            return comment;
+        };
+
+        let serverResponse = await __WEBPACK_IMPORTED_MODULE_0_isomorphic_fetch___default()(__WEBPACK_IMPORTED_MODULE_1__config_url_jsx__["b" /* urlComments */], {
             credentials: 'same-origin'
-        }).then(res => {
-            return res.json();
-        }).then(store => {
-            store.comments.map(comment => {
-                comment.id = comment._id;
-                comment.date = new Date(comment.date);
+        });
+
+        serverResponse.json().then(async store => {
+            store.comments = await Promise.all(store.comments.map(comment => {
+                comment = changeCommentForClientApp(comment);
                 return comment;
-            });
+            }));
             return store;
         }).then(store => {
             dispatch(__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2__actions_jsx__["c" /* getComments */])(store));
@@ -5568,33 +5579,30 @@ const getStore = () => {
 
 
 const DeleteComment = id => {
-    return dispatch => {
-        __WEBPACK_IMPORTED_MODULE_0_isomorphic_fetch___default()(__WEBPACK_IMPORTED_MODULE_1__config_url_jsx__["b" /* urlComments */], {
+    return async dispatch => {
+
+        let serverResponse = await __WEBPACK_IMPORTED_MODULE_0_isomorphic_fetch___default()(__WEBPACK_IMPORTED_MODULE_1__config_url_jsx__["b" /* urlComments */], {
             method: 'delete',
             headers: {
                 'Accept': 'application/json, text/plain, */*',
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ id: id })
-        }).then(res => {
-            if (res.status === 200) {
-                dispatch(__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2__actions_jsx__["d" /* deleteComment */])(id));
-            } else {
-                return 0;
-            }
+            body: JSON.stringify({ id })
         });
+
+        serverResponse.status === 200 ? dispatch(__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2__actions_jsx__["d" /* deleteComment */])(id)) : dispatch(__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2__actions_jsx__["e" /* showDeleteCommentError */])(id));
     };
 };
 /* harmony export (immutable) */ __webpack_exports__["b"] = DeleteComment;
 
 
 const AddComment = (name, comment) => {
-    return dispatch => {
+    return async dispatch => {
         let data = {
             name: name,
             comment: comment
         };
-        __WEBPACK_IMPORTED_MODULE_0_isomorphic_fetch___default()(__WEBPACK_IMPORTED_MODULE_1__config_url_jsx__["b" /* urlComments */], {
+        let serverResponse = await __WEBPACK_IMPORTED_MODULE_0_isomorphic_fetch___default()(__WEBPACK_IMPORTED_MODULE_1__config_url_jsx__["b" /* urlComments */], {
             method: 'post',
             credentials: 'same-origin',
             headers: {
@@ -5602,38 +5610,30 @@ const AddComment = (name, comment) => {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(data)
-        }).then(res => {
-            if (res.status === 200) {
-                res.json().then(res => dispatch(__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2__actions_jsx__["e" /* addComment */])(name, comment, res.id)));
-            } else {
-                return 0;
-            }
         });
+        serverResponse.status === 200 ? serverResponse.json().then(res => dispatch(__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2__actions_jsx__["f" /* addComment */])(name, comment, res.id))) : 0;
     };
 };
 /* harmony export (immutable) */ __webpack_exports__["d"] = AddComment;
 
 
 const SaveComment = (id, comment) => {
-    return dispatch => {
-        let data = {
-            id: id,
-            comment: comment
-        };
-        __WEBPACK_IMPORTED_MODULE_0_isomorphic_fetch___default()(__WEBPACK_IMPORTED_MODULE_1__config_url_jsx__["b" /* urlComments */], {
-            method: 'put',
-            headers: {
-                'Accept': 'application/json, text/plain, */*',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-        }).then(res => {
-            if (res.status === 200) {
-                dispatch(__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2__actions_jsx__["f" /* saveComment */])(id, comment));
-            } else {
-                return 0;
-            }
-        });
+    return async dispatch => {
+
+        if (comment === '') dispatch(__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2__actions_jsx__["g" /* showEditCommentError */])(id));else {
+            let data = { id, comment };
+
+            let serverResponse = await __WEBPACK_IMPORTED_MODULE_0_isomorphic_fetch___default()(__WEBPACK_IMPORTED_MODULE_1__config_url_jsx__["b" /* urlComments */], {
+                method: 'put',
+                headers: {
+                    'Accept': 'application/json, text/plain, */*',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
+            serverResponse.status === 200 ? dispatch(__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2__actions_jsx__["h" /* saveComment */])(id, comment)) : dispatch(__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2__actions_jsx__["g" /* showEditCommentError */])(id));
+        }
     };
 };
 /* harmony export (immutable) */ __webpack_exports__["c"] = SaveComment;
@@ -8150,7 +8150,7 @@ const addComment = (name, comment, id) => ({
     comment,
     id
 });
-/* harmony export (immutable) */ __webpack_exports__["e"] = addComment;
+/* harmony export (immutable) */ __webpack_exports__["f"] = addComment;
 
 
 const saveComment = (id, comment) => ({
@@ -8158,7 +8158,7 @@ const saveComment = (id, comment) => ({
     id,
     comment
 });
-/* harmony export (immutable) */ __webpack_exports__["f"] = saveComment;
+/* harmony export (immutable) */ __webpack_exports__["h"] = saveComment;
 
 
 const setEditableComment = id => ({
@@ -8173,6 +8173,20 @@ const cancelEditing = id => ({
     id
 });
 /* harmony export (immutable) */ __webpack_exports__["b"] = cancelEditing;
+
+
+const showDeleteCommentError = id => ({
+    type: __WEBPACK_IMPORTED_MODULE_0__constants_constants_jsx__["g" /* SHOW_DELETE_COMMENT_ERROR */],
+    id
+});
+/* harmony export (immutable) */ __webpack_exports__["e"] = showDeleteCommentError;
+
+
+const showEditCommentError = id => ({
+    type: __WEBPACK_IMPORTED_MODULE_0__constants_constants_jsx__["h" /* SHOW_EDIT_COMMENT_ERROR */],
+    id
+});
+/* harmony export (immutable) */ __webpack_exports__["g"] = showEditCommentError;
 
 
 /***/ }),
@@ -8197,6 +8211,12 @@ const CANCEL_EDITING = 'CANCEL_EDITING';
 
 const GET_COMMENTS = 'GET_COMMENTS';
 /* harmony export (immutable) */ __webpack_exports__["a"] = GET_COMMENTS;
+
+const SHOW_DELETE_COMMENT_ERROR = 'SHOW_DELETE_COMMENT_ERROR';
+/* harmony export (immutable) */ __webpack_exports__["g"] = SHOW_DELETE_COMMENT_ERROR;
+
+const SHOW_EDIT_COMMENT_ERROR = 'SHOW_EDIT_COMMENT_ERROR';
+/* harmony export (immutable) */ __webpack_exports__["h"] = SHOW_EDIT_COMMENT_ERROR;
 
 
 /***/ }),
@@ -8254,8 +8274,8 @@ const CHANGE_DATE = 'CHANGE_DATE';
 /* harmony export (immutable) */ __webpack_exports__["b"] = CHANGE_DATE;
 
 
-const CHANGE_TYPE = 'CHANGE_TYPE';
-/* harmony export (immutable) */ __webpack_exports__["c"] = CHANGE_TYPE;
+const CHANGE_FORMAT = 'CHANGE_FORMAT';
+/* harmony export (immutable) */ __webpack_exports__["c"] = CHANGE_FORMAT;
 
 
 const CHANGE_GENRE = 'CHANGE_GENRE';
@@ -13237,7 +13257,9 @@ const reducer = (state, action) => {
     switch (action.type) {
 
         case __WEBPACK_IMPORTED_MODULE_0__constants_constants_jsx__["a" /* SET_STORE */]:
-            return Object.assign({}, state, action.store);
+            let newStore = Object.assign({}, state);
+            newStore.films = JSON.parse(JSON.stringify(action.films));
+            return newStore;
 
         case __WEBPACK_IMPORTED_MODULE_0__constants_constants_jsx__["b" /* CHANGE_DATE */]:
             localStorage.setItem('date', action.date);
@@ -13249,8 +13271,8 @@ const reducer = (state, action) => {
             return Object.assign({}, state, {
                 genre: action.genre
             });
-        case __WEBPACK_IMPORTED_MODULE_0__constants_constants_jsx__["c" /* CHANGE_TYPE */]:
-            localStorage.setItem('type', action.filmType);
+        case __WEBPACK_IMPORTED_MODULE_0__constants_constants_jsx__["c" /* CHANGE_FORMAT */]:
+            localStorage.setItem('format', action.filmType);
             return Object.assign({}, state, {
                 format: action.filmType
             });
@@ -13321,8 +13343,9 @@ __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1_react_dom__["render"])(__WEBPA
 
 
 const validateData = (login, password) => {
-    return dispatch => {
+    return async dispatch => {
         let errors = [];
+
         if (login.length === 0) errors.push('Введите логин');else {
             if (login.length < 3) errors.push('Логин должен быть минимум 2 символа');else {
                 if (!/^[a-zA-Zа-яА-Я'][a-zA-Zа-яА-Я-' ]+[a-zA-Zа-яА-Я']?$/.test(login)) errors.push('Логин содержит недопустимые символы');
@@ -13336,7 +13359,7 @@ const validateData = (login, password) => {
         if (errors.length > 0) {
             dispatch(__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2__actions_jsx__["a" /* showErrors */])(errors));
         } else {
-            __WEBPACK_IMPORTED_MODULE_0_isomorphic_fetch___default()(__WEBPACK_IMPORTED_MODULE_1__config_url_jsx__["c" /* urlLogin */], {
+            let serverResponse = await __WEBPACK_IMPORTED_MODULE_0_isomorphic_fetch___default()(__WEBPACK_IMPORTED_MODULE_1__config_url_jsx__["c" /* urlLogin */], {
                 method: 'post',
                 credentials: 'same-origin',
                 headers: {
@@ -13344,17 +13367,13 @@ const validateData = (login, password) => {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({ login, password })
-            }).then(res => {
-                if (res.status === 200) {
-                    res.json().then(result => {
-                        dispatch(__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2__actions_jsx__["b" /* successAuth */])(result.login));
-                    });
-                } else {
-                    res.json().then(result => {
-                        errors = [result.errors];
-                        dispatch(__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2__actions_jsx__["a" /* showErrors */])(errors));
-                    });
-                }
+            });
+
+            serverResponse.status === 200 ? serverResponse.json().then(result => {
+                dispatch(__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2__actions_jsx__["b" /* successAuth */])(result.login));
+            }) : serverResponse.json().then(result => {
+                errors = [result.errors];
+                dispatch(__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2__actions_jsx__["a" /* showErrors */])([result.errors]));
             });
         }
     };
@@ -13363,15 +13382,19 @@ const validateData = (login, password) => {
 
 
 const isUserLogin = () => {
-    return dispatch => {
-        __WEBPACK_IMPORTED_MODULE_0_isomorphic_fetch___default()(__WEBPACK_IMPORTED_MODULE_1__config_url_jsx__["c" /* urlLogin */], {
-            method: 'get',
-            credentials: 'include'
-        }).then(res => {
-            res.json().then(result => {
+    return async dispatch => {
+        try {
+            let serverResponse = await __WEBPACK_IMPORTED_MODULE_0_isomorphic_fetch___default()(__WEBPACK_IMPORTED_MODULE_1__config_url_jsx__["c" /* urlLogin */], {
+                method: 'get',
+                credentials: 'include'
+            });
+
+            serverResponse.json().then(result => {
                 result.login ? dispatch(__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2__actions_jsx__["b" /* successAuth */])(result.login)) : 0;
             });
-        });
+        } catch (err) {
+            console.log(err);
+        }
     };
 };
 /* harmony export (immutable) */ __webpack_exports__["b"] = isUserLogin;
@@ -13410,7 +13433,7 @@ const showErrors = errors => ({
 
 __webpack_require__(327);
 
-class Login extends __WEBPACK_IMPORTED_MODULE_0_react__["Component"] {
+class LoginForm extends __WEBPACK_IMPORTED_MODULE_0_react__["Component"] {
     constructor(props) {
         super(props);
         this.submit = this.submit.bind(this);
@@ -13486,7 +13509,7 @@ class Login extends __WEBPACK_IMPORTED_MODULE_0_react__["Component"] {
     }
 
 }
-/* harmony export (immutable) */ __webpack_exports__["a"] = Login;
+/* harmony export (immutable) */ __webpack_exports__["a"] = LoginForm;
 
 
 /***/ }),
@@ -13597,11 +13620,13 @@ class CommentsList extends __WEBPACK_IMPORTED_MODULE_0_react__["Component"] {
     render() {
         let el,
             elOptions,
+            elChangingErrors,
             id = 0;
         return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
             'div',
             { className: 'comments' },
             this.props.store.comments.map(comment => {
+
                 if (comment.editable === true) {
                     el = __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                         'div',
@@ -13624,6 +13649,7 @@ class CommentsList extends __WEBPACK_IMPORTED_MODULE_0_react__["Component"] {
                         comment.comment
                     );
                 }
+
                 if (comment.current === true) {
                     elOptions = __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                         'div',
@@ -13640,6 +13666,21 @@ class CommentsList extends __WEBPACK_IMPORTED_MODULE_0_react__["Component"] {
                         )
                     );
                 } else elOptions = '';
+
+                if (comment.changingErrors.edit === true) {
+                    elChangingErrors = __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                        'span',
+                        { className: 'changing-err' },
+                        '\u041E\u0448\u0438\u0431\u043A\u0430 \u0440\u0435\u0434\u0430\u043A\u0442\u0438\u0440\u043E\u0432\u0430\u043D\u0438\u044F'
+                    );
+                } else if (comment.changingErrors.delete === true) {
+                    elChangingErrors = __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                        'span',
+                        { className: 'changing-err' },
+                        '\u041D\u0435 \u0443\u0434\u0430\u043B\u043E\u0441\u044C \u0443\u0434\u0430\u043B\u0438\u0442\u044C \u043A\u043E\u043C\u043C\u0435\u043D\u0442\u0430\u0440\u0438\u0439'
+                    );
+                }
+
                 return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                     'div',
                     { className: 'comment-block', key: id++ },
@@ -13656,6 +13697,7 @@ class CommentsList extends __WEBPACK_IMPORTED_MODULE_0_react__["Component"] {
                             { className: 'comment-time' },
                             __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__convertDate_jsx__["a" /* default */])(comment.date)
                         ),
+                        elChangingErrors,
                         elOptions
                     ),
                     el
@@ -13926,7 +13968,11 @@ const reducer = (store, action) => {
                 comment: action.comment,
                 current: true,
                 editable: false,
-                date: new Date()
+                date: new Date(),
+                changingErrors: {
+                    edit: false,
+                    delete: false
+                }
             });
             return newStore0;
 
@@ -13961,6 +14007,29 @@ const reducer = (store, action) => {
                 comment.id === action.id ? comment.editable = false : 0;
             });
             return newStore1;
+
+        case __WEBPACK_IMPORTED_MODULE_0__constants_constants_jsx__["g" /* SHOW_DELETE_COMMENT_ERROR */]:
+            let newStore4 = Object.assign([], store);
+            newStore4.comments.map(comment => {
+                comment.id === action.id ? comment.changingErrors = {
+                    edit: false,
+                    delete: true
+                } : 0;
+            });
+            return newStore4;
+
+        case __WEBPACK_IMPORTED_MODULE_0__constants_constants_jsx__["h" /* SHOW_EDIT_COMMENT_ERROR */]:
+            let newStore5 = Object.assign([], store);
+            newStore5.comments.map(comment => {
+                if (comment.id === action.id) {
+                    comment.editable = false;
+                    comment.changingErrors = {
+                        edit: true,
+                        delete: false
+                    };
+                }
+            });
+            return newStore5;
 
         default:
             return store;
@@ -14444,11 +14513,11 @@ let initialState = {
             '01.01.2017': []
         }
     }],
-    date: '01.01.2017',
-    format: 'Все',
-    minTime: 540,
-    maxTime: 1440,
-    genre: 'Все жанры'
+    date: localStorage.getItem('date') || '01.01.2017',
+    format: localStorage.getItem('format') || 'Все',
+    minTime: localStorage.getItem('minTime') || 540,
+    maxTime: localStorage.getItem('maxTime') || 1440,
+    genre: localStorage.getItem('genre') || 'Все жанры'
 };
 
 const store = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0_redux__["b" /* createStore */])(__WEBPACK_IMPORTED_MODULE_1__reducers_index__["a" /* default */], initialState, __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0_redux__["c" /* applyMiddleware */])(__WEBPACK_IMPORTED_MODULE_2_redux_thunk___default.a), window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__());
@@ -14640,18 +14709,17 @@ const toTime = time => {
 };
 
 const filterByDate = state => {
-    let helpFilmsArr = [];
-    state.films.map(el => {
-        helpFilmsArr.push(Object.assign({}, el, {
-            timetable: el.timetable[state.date]
-        }));
+    let newState = JSON.parse(JSON.stringify(state));
+    newState.films.map(el => {
+        for (let key in el.timetable) {
+            if (key === state.date) el.timetable = el.timetable[key];
+        }
     });
-    return Object.assign({}, state, {
-        films: helpFilmsArr
-    });
+    return newState;
 };
 
 const filterByGenre = state => {
+
     let newFilmsState = [];
     state.films.map(el => {
         el.genre.map(elm => {
@@ -14664,27 +14732,13 @@ const filterByGenre = state => {
 };
 
 const filterByFormat = state => {
-    let helpArrFilms = [],
-        helpVar,
-        id = 0;
-    state.films.map(el => {
-        helpVar = 0;
-        helpArrFilms.push(Object.assign({}, el));
-        console.log(el);
-        console.log(helpArrFilms);
-        helpArrFilms[id].timetable = [];
-        el.timetable.map(elm => {
-            if (elm.format === state.format) {
-                helpVar++;
-                helpArrFilms[id].timetable.push(elm);
-            }
+    state.films = state.films.filter(el => {
+        el.timetable = el.timetable.filter(elm => {
+            return elm.format === state.format;
         });
-        if (helpVar === 0) helpArrFilms.splice(id, 1);
-        id++;
+        return !!el.timetable.length;
     });
-    return Object.assign({}, state, {
-        films: helpArrFilms
-    });
+    return state;
 };
 
 const filterByTime = state => {
@@ -15641,7 +15695,7 @@ exports = module.exports = __webpack_require__(9)(undefined);
 
 
 // module
-exports.push([module.i, ".comments {\n    width: auto;\n    position: relative;\n    height: auto;\n}\n\n.main .comments .comment-block .comment-header .author-name {\n    font-size: 16px;\n    color: rgba(0, 0, 255, 0.63);\n}\n\n.main .comments .comment-block .comment-header .comment-time {\n    margin-left: 20px;\n    color: rgba(0, 0, 0, 0.5);\n}\n\n.main .comments .comment-block {\n    margin-top: 15px;\n}\n\n.comments .comment-edit {\n    width: 100%;\n    height: 100%;\n}\n\n.main .comments .comment-block .comment {\n    margin-top: 3px;\n}", ""]);
+exports.push([module.i, ".comments {\n    width: auto;\n    position: relative;\n    height: auto;\n}\n\n.main .comments .comment-block .comment-header .author-name {\n    font-size: 16px;\n    color: rgba(0, 0, 255, 0.63);\n}\n\n.main .comments .comment-block .comment-header .comment-time {\n    margin-left: 20px;\n    color: rgba(0, 0, 0, 0.5);\n}\n\n.main .comments .comment-block {\n    margin-top: 15px;\n}\n\n.comments .comment-edit {\n    width: 100%;\n    height: 100%;\n}\n\n.main .comments .comment-block .comment {\n    margin-top: 3px;\n}\n\n.comment-block .comment-header .changing-err {\n    margin-left: 80px;\n    color: red;\n    font-weight: bold;\n}", ""]);
 
 // exports
 

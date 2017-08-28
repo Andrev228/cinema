@@ -21,7 +21,7 @@ export const getStore = () => {
             return comment;
         };
 
-        let serverResponse = await fetch('http://localhost:3000/comments', {
+        let serverResponse = await fetch(urlComments, {
             credentials: 'same-origin',
         });
 

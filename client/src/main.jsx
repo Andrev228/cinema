@@ -4,10 +4,7 @@ import FilterApp              from './modules/timetable/components/FilterAppCrea
 import ReviewsAppInitStore    from './modules/reviews/components/ReviewsAppInitStore.jsx';
 import Login                  from './modules/login/components/Login.jsx';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
-import Header                 from './modules/header/components/Header.jsx'
-
-
-
+import Header                 from './modules/header/components/Header.jsx';
 
 render(
     <Router>

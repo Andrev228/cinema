@@ -5,7 +5,6 @@ var router  = express.Router();
 var users   = require('../db/models/Users.js');
 var Promise = require('bluebird');
 
-
 router.get('/', function (req, res, next) {
     var result = jwt.decode(req.cookies.token);
     if (result) {

@@ -6,7 +6,7 @@ var express      = require('express');
     bodyParser   = require('body-parser'),
     index        = require('./routes/index'),
     timetable    = require('./routes/timetable'),
-    comments     = require('./routes/comments'),
+    reviews      = require('./routes/reviews'),
     login        = require('./routes/login'),
     db           = require('./db/mongoose'),
     errorHandler = require('./error_handler');
@@ -24,7 +24,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', index);
 app.use('/timetable', timetable);
-app.use('/comments', comments);
+app.use('/reviews', reviews);
 app.use('/login', login);
 
 // catch 404 and forward to error handler

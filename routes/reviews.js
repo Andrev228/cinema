@@ -3,7 +3,13 @@ var router   = express.Router();
 var comments = require('../db/models/Comments');
 var jwt      = require('jsonwebtoken');
 
-router.get('/', function(req, res, next) {
+
+router.get('/', function (req, res, next) {
+    res.render('index');
+});
+
+
+router.get('/api', function(req, res, next) {
 
     var user_data = jwt.decode(req.cookies.token);
     comments.find()
@@ -28,7 +34,7 @@ router.get('/', function(req, res, next) {
         })
 });
 
-router.put('/', function(req, res, next) {
+router.put('/api', function(req, res, next) {
     comments.findByIdAndUpdate(req.body.id,
         {
             $set: {
@@ -40,7 +46,7 @@ router.put('/', function(req, res, next) {
 
 });
 
-router.post('/', function(req, res, next) {
+router.post('/api', function(req, res, next) {
     var data = {
         name: req.body.name,
         comment: req.body.comment
@@ -53,7 +59,7 @@ router.post('/', function(req, res, next) {
     });
 });
 
-router.delete('/', function(req, res, next) {
+router.delete('/api', function(req, res, next) {
     comments.deleteOne({ _id: req.body.id }, function (err) {
         !!err ? next(err) : res.status(200).send();
     })
