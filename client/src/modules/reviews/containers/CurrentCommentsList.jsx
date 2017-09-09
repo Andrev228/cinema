@@ -1,24 +1,19 @@
 import { connect }            from 'react-redux';
 import CommentsList           from '../components/CommentsList.jsx';
-import { DeleteComment,
-    SaveComment   }           from '../actions/actionCreators.jsx';
-
-import { setEditableComment,
-    cancelEditing }           from '../actions/actions.jsx';
+import { SaveComment }        from '../actions/actionCreators.jsx';
+import { cancelEditing }      from '../actions/actions.jsx';
 import { bindActionCreators } from 'redux';
 
 const getCommentsList = (state) => {
-    return Object.assign({}, state);
+    return Object.assign([], state.comments);
 };
 
 const mapStateToProps = (state) => ({
-    store: getCommentsList(state),
+    comments: getCommentsList(state),
 });
 
 const mapDispatchToProps = (dispatch) => ({
     actions: bindActionCreators({
-        DeleteComment,
-        setEditableComment,
         SaveComment,
         cancelEditing
     }, dispatch)

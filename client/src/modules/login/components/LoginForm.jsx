@@ -5,7 +5,6 @@ require('../styles/login.css');
 export default class LoginForm extends Component {
     constructor(props) {
         super(props);
-        this.submit = this.submit.bind(this);
         this.loginField = '';
         this.password = '';
     }

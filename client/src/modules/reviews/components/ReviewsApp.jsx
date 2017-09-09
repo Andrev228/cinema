@@ -10,15 +10,15 @@ export default class ReviewsApp extends React.Component {
         super(props)
     }
 
-    componentWillMount() {
-        this.props.actions.getStore();
-    }
-
     render() {
         return (<div className="main">
                     <InputField />
                     <CurrentCommentsList />
                 </div>)
+    }
+
+    componentDidMount() {
+        this.props.actions.getStore();
     }
 
 }

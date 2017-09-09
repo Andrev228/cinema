@@ -13,17 +13,15 @@ export const deleteComment = (id) => ({
 export const addComment = (name, comment, id) => ({
     type: types.ADD_COMMENT,
         name,
-        comment,
+        text: comment,
         id
 });
 
-
 export const saveComment = (id, comment) => ({
-    type: types.SAVE_COMMENT,
+        type: types.SAVE_COMMENT,
         id,
         comment
-});
-
+    });
 
 export const setEditableComment = (id) => ({
     type: types.SET_EDITABLE_COMMENT,

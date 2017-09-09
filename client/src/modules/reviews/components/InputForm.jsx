@@ -3,16 +3,18 @@ import React, { Component } from 'react';
 require('../styles/InputForm.css');
 
 export default class InputForm extends Component {
+
     constructor(props) {
         super(props);
-        this._addComment = this._addComment.bind(this);
         this.comment = '';
     }
+
     _addComment() {
         let comment = this.comment.value,
             add = this.props.actions.AddComment;
         add(this.props.login, comment);
     }
+
     render() {
         let el;
         if (this.props.login === '') {

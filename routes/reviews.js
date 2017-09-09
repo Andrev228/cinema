@@ -60,6 +60,7 @@ router.post('/api', function(req, res, next) {
 });
 
 router.delete('/api', function(req, res, next) {
+    console.log('123');
     comments.deleteOne({ _id: req.body.id }, function (err) {
         !!err ? next(err) : res.status(200).send();
     })

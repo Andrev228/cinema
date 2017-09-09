@@ -11,7 +11,7 @@ const reducer = (store, action) => {
             newStore0.comments.push({
                 id: action.id,
                 name: action.name,
-                comment: action.comment,
+                comment: action.text,
                 current: true,
                 editable: false,
                 date: new Date(),
@@ -22,14 +22,14 @@ const reducer = (store, action) => {
             });
             return newStore0;
 
-        case types.SET_EDITABLE_COMMENT:
+        case types.SET_EDITABLE_COMMENT:                                  //changeEditableMode
             let newStore = Object.assign({}, store);
             newStore.comments.map(comment => {
                 comment.editable = (comment.id === action.id);
             });
             return newStore;
 
-        case types.DELETE_COMMENT:
+        case types.DELETE_COMMENT:                                        //changeEditableMode
             let newStore2 = Object.assign({}, store);
             newStore2.comments = newStore2.comments.filter(comment => {
                 return comment.id !== action.id;

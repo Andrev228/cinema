@@ -1,84 +1,42 @@
-import React, { Component } from 'react';
-import convertDate          from '../convertDate.jsx';
+import React                 from 'react';
+import convertDate           from '../convertDate.jsx';
+import CurrentCommentOptions from '../containers/CurrentCommentOptions.jsx';
+import CurrentEditingField   from '../containers/CurrentEditingField.jsx';
+import ChangingError         from './ChangingError.jsx';
 
 require('../styles/Comments.css');
 
-export default class CommentsList extends Component {
-
-    constructor(props) {
-        super(props);
-        this.Save = this.Save.bind(this);
-        this.Cancel = this.Cancel.bind(this);
-        this.comment = '';
-    }
-
-    Save(id) {
-        this.props.actions.SaveComment(id, this.comment.value);
-    }
-
-    Cancel(id) {
-        this.props.actions.cancelEditing(id);
-    }
-
-    render() {
+const CommentsList = ({ comments }) => {
         let el,
             elOptions,
             elChangingErrors,
             id = 0;
         return (<div className="comments">
             {
-                this.props.store.comments.map(comment => {
+                comments.map(comment => {
+
+                    if (comment.editable) el = (<CurrentEditingField id={comment.id} comment={comment.comment}/>);
+                    else el = (<div className="comment">{comment.comment}</div>);
 
 
-                    if (comment.editable === true) {
-                        el = (<div>
-                            <textarea type="textarea"
-                                 className="comment-edit"
-                                 ref={input => this.comment = input}
-                                 defaultValue={comment.comment} />
-                            <input type="button"
-                               value="Сохранить"
-                               onClick={this.Save.bind(null, comment.id)} />
-                            <input type="button"
-                               value="Отмена"
-                               onClick={this.Cancel.bind(null, comment.id)} />
-                        </div>)
-                    } else {
-                        el = (<div className="comment">
-                                    {comment.comment}
-                              </div>)
-                    }
+                    if (comment.current) elOptions = (<CurrentCommentOptions id={ comment.id } />);
 
+                    if (comment.changingErrors.edit) elChangingErrors = (<ChangingError>Ошибка редактирования</ChangingError>);
+                    else if (comment.changingErrors.delete) elChangingErrors = (<ChangingError>Не удалось удалить комментарий</ChangingError>);
 
-                    if (comment.current === true) {
-                        elOptions = (<div>
-                                        <span className="remove" onClick={this.props.actions.setEditableComment.bind(null, comment.id)}>Ред.</span>
-                                        <span className="remove" onClick={this.props.actions.DeleteComment.bind(null, comment.id)}>Х</span>
-                                     </div>)
-                    } else elOptions = '';
-
-                    if (comment.changingErrors.edit === true) {
-                        elChangingErrors = (<span className="changing-err">Ошибка редактирования</span>)
-                    } else if (comment.changingErrors.delete === true) {
-                        elChangingErrors = (<span className="changing-err">Не удалось удалить комментарий</span>)
-                    }
 
                     return (<div className="comment-block" key={id++}>
                                 <div className="comment-header">
-                                    <span className="author-name">
-                                        {comment.name}
-                                    </span>
-                                    <span className="comment-time">
-                                        {convertDate(comment.date)}
-                                    </span>
-                                    { elChangingErrors }
-                                    { elOptions }
+                                    <span className="author-name">{comment.name}</span>
+                                    <span className="comment-time">{convertDate(comment.date)}</span>
+                                { elChangingErrors }
+                                { elOptions }
                                 </div>
                                 {el}
                             </div>);
-
                 })
             }
         </div>)
-    }
-}
+    };
+
+export default CommentsList;

@@ -43,16 +43,14 @@ export const getStore = () => {
 
 export const DeleteComment = (id) => {
     return async (dispatch) => {
-
         let serverResponse = await fetch(urlComments, {
             method: 'delete',
             headers: {
                 'Accept': 'application/json, text/plain, */*',
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ id })
+            body: JSON.stringify({ id }),
         });
-
             serverResponse.status === 200 ?
                 dispatch(deleteComment(id))
                 : dispatch(showDeleteCommentError(id))
